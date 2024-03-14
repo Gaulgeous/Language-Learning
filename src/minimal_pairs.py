@@ -8,10 +8,10 @@ from random import randint
 ctk.set_appearance_mode("dark")  # Modes: "System" (standard), "Dark", "Light"
 ctk.set_default_color_theme("green")
 
-audio_width = 26
-audio_height = 26
-symbol_width = 26
-symbol_height = 26
+audio_width = 100
+audio_height = 100
+symbol_width = 50
+symbol_height = 50
 
 
 class App(ctk.CTk):
@@ -21,46 +21,88 @@ class App(ctk.CTk):
 
         super().__init__()
 
-        self.data_path = data_path + "/minimal_pairs.csv"
+        self.data_folder = data_path
         self.image_path = data_path + r"/Images/"
         self.audio_path = data_path + r"/Audios/"
 
-        self.df = pd.read_csv(self.data_path)
-
         self.title("Minimal Pairs")
-        self.geometry("700x450")
+        self.geometry("500x600")
 
         # set grid layout 1x2
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
 
+        self.create_home_screen()
+
+
+    def clear_screen(self):
+        children = self.winfo_children()
+        for child in children:
+            child.destroy()
+
+
+    def create_home_screen(self):
+
+        self.clear_screen()
+
+        self.master_frame = ctk.CTkFrame(master=self, fg_color="black")
+        self.master_frame.pack(pady=0, padx=0, fill="both", expand=True)
+
+        self.symbol_text = ctk.CTkLabel(master=self.master_frame, fg_color="transparent", text="Choose a play mode")
+        self.symbol_text.pack(pady=40, padx=0)
+
+        self.tones_button = ctk.CTkButton(master=self.master_frame, command=self.tones_mode, text="Tones")
+        self.tones_button.pack(pady=20, padx=0)
+
+        self.sounds_button = ctk.CTkButton(master=self.master_frame, command=self.sounds_mode, text="Sounds")
+        self.sounds_button.pack(pady=20, padx=0)
+
+
+    def tones_mode(self):
+        self.data_path = self.data_folder + r"/tones.csv"
+        self.df = pd.read_csv(self.data_path)
+        self.create_working_screen()
+
+
+    def sounds_mode(self):
+        self.data_path = self.data_folder + r"/minimal_pairs.csv"
+        self.df = pd.read_csv(self.data_path)
+        self.create_working_screen()
+
+
+    def create_working_screen(self):
+
+        self.clear_screen()
+
+        self.word = self.select_word()
+
         self.master_frame = ctk.CTkFrame(master=self, fg_color="black")
         self.master_frame.pack(pady=0, padx=0, fill="both", expand=True)
 
         self.sound = ctk.CTkImage(Image.open(os.path.join(self.image_path, "audio.png")), size=(audio_width, audio_height))
-        self.correct = ctk.CTkImage(Image.open(os.path.join(self.image_path, "correct.png")), size=(26, 26))
-        self.incorrect = ctk.CTkImage(Image.open(os.path.join(self.image_path, "incorrect.png")), size=(26, 26))
+        self.correct = ctk.CTkImage(Image.open(os.path.join(self.image_path, "correct.png")), size=(symbol_width, symbol_height))
+        self.incorrect = ctk.CTkImage(Image.open(os.path.join(self.image_path, "incorrect.png")), size=(symbol_width, symbol_height))
 
         self.play_button = ctk.CTkButton(master=self.master_frame, command=self.play_sound, image=self.sound, text="", fg_color="black", bg_color="black", width=audio_width, height=audio_height)
-        self.play_button.pack(pady=0, padx=0)
+        self.play_button.pack(pady=20, padx=0)
 
         self.symbol = ctk.CTkLabel(master=self.master_frame, fg_color="transparent", width=symbol_width, height=symbol_height, text="")
-        self.symbol.pack(pady=0, padx=0)
+        self.symbol.pack(pady=20, padx=0)
         
         self.symbol_text = ctk.CTkLabel(master=self.master_frame, fg_color="transparent", text="")
         self.symbol_text.pack(pady=0, padx=0)
 
         self.answer = ctk.CTkLabel(master=self.master_frame, fg_color="transparent", text="")
-        self.answer.pack(pady=0, padx=0)
+        self.answer.pack(pady=20, padx=0)
 
         self.entry_box = ctk.CTkEntry(master=self.master_frame, placeholder_text="")
-        self.entry_box.pack(pady=0, padx=0)
+        self.entry_box.pack(pady=20, padx=0)
 
         self.submit_button = ctk.CTkButton(master=self.master_frame, command=self.check_input, text="Submit")
         self.submit_button.pack(pady=0, padx=0)
 
-        self.word = self.select_word()
-        # self.play_sound()
+        self.return_button = ctk.CTkButton(master=self.master_frame, command=self.create_home_screen, text="Return Home")
+        self.return_button.pack(pady=10, padx=0)
 
 
     def select_word(self):
@@ -73,7 +115,7 @@ class App(ctk.CTk):
         
         df_index = self.df.index[self.df['Word'] == word].tolist()[0]
         self.df.loc[df_index, "Appearances"] = self.df.loc[df_index, "Appearances"] + 1
-        self.df.to_csv(self.data_path)
+        self.df.to_csv(self.data_path, index=False)
 
         return word
     
