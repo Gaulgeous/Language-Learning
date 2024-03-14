@@ -21,10 +21,11 @@ class App(ctk.CTk):
 
         super().__init__()
 
+        self.data_path = data_path + "/minimal_pairs.csv"
         self.image_path = data_path + r"/Images/"
         self.audio_path = data_path + r"/Audios/"
 
-        self.df = pd.read_csv(data_path + "/minimal_pairs.csv")
+        self.df = pd.read_csv(self.data_path)
 
         self.title("Minimal Pairs")
         self.geometry("700x450")
@@ -59,13 +60,23 @@ class App(ctk.CTk):
         self.submit_button.pack(pady=0, padx=0)
 
         self.word = self.select_word()
+        # self.play_sound()
 
 
     def select_word(self):
-        index = randint(0, self.df.shape[0] - 1)
-        return self.df.iloc[index, 0]
-    
 
+        min_val = min(self.df["Appearances"])
+        not_appeared = self.df.loc[self.df["Appearances"] == min_val]
+        index = randint(0, not_appeared.shape[0] - 1)
+        row = not_appeared.iloc[index, :]
+        word = row["Word"]
+        
+        df_index = self.df.index[self.df['Word'] == word].tolist()[0]
+        self.df.loc[df_index, "Appearances"] = self.df.loc[df_index, "Appearances"] + 1
+        self.df.to_csv(self.data_path)
+
+        return word
+    
 
     def update_symbol(self, correct):
         if correct == True:
@@ -78,6 +89,7 @@ class App(ctk.CTk):
         self.entry_box.delete(0, len(self.entry_box.get()))
         self.answer.configure(text=self.word)
         self.word = self.select_word()
+        # self.play_sound()
 
 
     def check_input(self):
