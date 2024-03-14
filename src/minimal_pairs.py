@@ -12,6 +12,7 @@ audio_width = 100
 audio_height = 100
 symbol_width = 50
 symbol_height = 50
+font_type = ("helvetica", 20)
 
 
 class App(ctk.CTk):
@@ -48,7 +49,7 @@ class App(ctk.CTk):
         self.master_frame = ctk.CTkFrame(master=self, fg_color="black")
         self.master_frame.pack(pady=0, padx=0, fill="both", expand=True)
 
-        self.symbol_text = ctk.CTkLabel(master=self.master_frame, fg_color="transparent", text="Choose a play mode")
+        self.symbol_text = ctk.CTkLabel(master=self.master_frame, fg_color="transparent", text="Choose a play mode", font=font_type)
         self.symbol_text.pack(pady=40, padx=0)
 
         self.tones_button = ctk.CTkButton(master=self.master_frame, command=self.tones_mode, text="Tones")
@@ -89,10 +90,10 @@ class App(ctk.CTk):
         self.symbol = ctk.CTkLabel(master=self.master_frame, fg_color="transparent", width=symbol_width, height=symbol_height, text="")
         self.symbol.pack(pady=20, padx=0)
         
-        self.symbol_text = ctk.CTkLabel(master=self.master_frame, fg_color="transparent", text="")
+        self.symbol_text = ctk.CTkLabel(master=self.master_frame, fg_color="transparent", text="", font=font_type)
         self.symbol_text.pack(pady=0, padx=0)
 
-        self.answer = ctk.CTkLabel(master=self.master_frame, fg_color="transparent", text="")
+        self.answer = ctk.CTkLabel(master=self.master_frame, fg_color="transparent", text="", font=font_type)
         self.answer.pack(pady=20, padx=0)
 
         self.entry_box = ctk.CTkEntry(master=self.master_frame, placeholder_text="")
