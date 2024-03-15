@@ -83,6 +83,7 @@ class App(ctk.CTk):
         self.sound = ctk.CTkImage(Image.open(os.path.join(self.image_path, "audio.png")), size=(audio_width, audio_height))
         self.correct = ctk.CTkImage(Image.open(os.path.join(self.image_path, "correct.png")), size=(symbol_width, symbol_height))
         self.incorrect = ctk.CTkImage(Image.open(os.path.join(self.image_path, "incorrect.png")), size=(symbol_width, symbol_height))
+        self.blank = ctk.CTkImage(Image.open(os.path.join(self.image_path, "blank.png")), size=(symbol_width, symbol_height))
 
         self.play_button = ctk.CTkButton(master=self.master_frame, command=self.play_sound, image=self.sound, text="", fg_color="black", bg_color="black", width=audio_width, height=audio_height)
         self.play_button.pack(pady=20, padx=0)
@@ -101,6 +102,9 @@ class App(ctk.CTk):
 
         self.submit_button = ctk.CTkButton(master=self.master_frame, command=self.check_input, text="Submit")
         self.submit_button.pack(pady=0, padx=0)
+
+        self.next_button = ctk.CTkButton(master=self.master_frame, command=self.next_input, text="Next")
+        self.next_button.pack(pady=10, padx=0)
 
         self.return_button = ctk.CTkButton(master=self.master_frame, command=self.create_home_screen, text="Return Home")
         self.return_button.pack(pady=10, padx=0)
@@ -121,6 +125,14 @@ class App(ctk.CTk):
         return word
     
 
+    def next_input(self):
+        self.symbol_text.configure(text="")
+        self.symbol.configure(image=self.blank)
+        self.answer.configure(text="")
+        self.word = self.select_word()
+        self.play_sound()
+    
+
     def update_symbol(self, correct):
         if correct == True:
             self.symbol.configure(image=self.correct)
@@ -130,9 +142,7 @@ class App(ctk.CTk):
             self.symbol_text.configure(text="Incorrect")
 
         self.entry_box.delete(0, len(self.entry_box.get()))
-        self.answer.configure(text=self.word)
-        self.word = self.select_word()
-        # self.play_sound()
+        self.answer.configure(text=self.word)  
 
 
     def check_input(self):
